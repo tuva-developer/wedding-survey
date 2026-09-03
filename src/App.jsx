@@ -8,13 +8,13 @@ const attendanceOptions = [
   {
     value: 'lam-dong',
     title: 'Về Lâm Đồng chung vui',
-    description: 'Mình muốn tham dự vu quy tại nhà ở Lâm Đồng.',
+    description: 'Mình muốn tham dự vu quy tại nhà ở Lâm Đồng (ngày 12/12/2026).',
     badge: 'Vu quy',
   },
   {
     value: 'sai-gon',
     title: 'Hẹn nhau ở Sài Gòn',
-    description: 'Mình muốn tham dự buổi báo hỷ tại Sài Gòn.',
+    description: 'Mình muốn tham dự buổi báo hỷ tại Sài Gòn (dự định tháng 1 hoặc tháng 2/2027).',
     badge: 'Báo hỷ',
   },
   {
@@ -30,6 +30,23 @@ const initialForm = {
   attendance: 'lam-dong',
   guestCount: '1',
   note: '',
+}
+
+const formatSubmittedAt = (date) => {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+  }).formatToParts(date)
+  const getPart = (type) => parts.find((part) => part.type === type)?.value ?? ''
+
+  return `${getPart('day')}/${getPart('month')}/${getPart('year')} ${getPart('hour')}:${getPart('minute')}:${getPart('second')}`
 }
 
 function App() {
@@ -88,7 +105,7 @@ function App() {
       attendanceLabel: selected?.title ?? '',
       guestCount: form.guestCount,
       note: form.note.trim(),
-      submittedAt: new Date().toISOString(),
+      submittedAt: formatSubmittedAt(new Date()),
     })
 
     try {
