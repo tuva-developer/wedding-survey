@@ -1,37 +1,33 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
-import { Check, Heart, MapPin, PartyPopper, Send, Sparkles, UserRound, UsersRound } from 'lucide-react'
+import { Check, Heart, PartyPopper, Send, Sparkles, UserRound, UsersRound } from 'lucide-react'
 import FloatingDecor from './components/FloatingDecor.jsx'
 
 const attendanceOptions = [
   {
     value: 'lam-dong',
-    emoji: '🌿',
     title: 'Về Lâm Đồng chung vui',
-    description: 'Mình muốn tham dự lễ cưới tại nhà ở Lâm Đồng.',
-    badge: 'Lễ cưới',
+    description: 'Mình muốn tham dự vu quy tại nhà ở Lâm Đồng.',
+    badge: 'Vu quy',
   },
   {
     value: 'sai-gon',
-    emoji: '🌆',
     title: 'Hẹn nhau ở Sài Gòn',
     description: 'Mình muốn tham dự buổi báo hỷ tại Sài Gòn.',
     badge: 'Báo hỷ',
   },
   {
     value: 'either',
-    emoji: '💗',
     title: 'Ở đâu cũng được',
     description: 'Hai bạn sắp xếp chỗ nào mình cũng vui vẻ tham gia.',
-    badge: 'Linh hoạt',
   },
 ]
 
 const initialForm = {
   fullName: '',
   phone: '',
-  attendance: '',
+  attendance: 'lam-dong',
   guestCount: '1',
   note: '',
 }
@@ -57,8 +53,6 @@ function App() {
   }
 
   const validate = () => {
-    if (!form.fullName.trim()) return 'Bạn cho tụi mình xin tên nha 💌'
-    if (!form.phone.trim()) return 'Bạn nhập số điện thoại để tụi mình tiện liên hệ nhé.'
     if (!form.attendance) return 'Bạn chọn một địa điểm muốn tham dự giúp tụi mình nha.'
     return ''
   }
@@ -149,10 +143,10 @@ function App() {
             Tụi mình đang lên kế hoạch để có thể gặp gỡ mọi người thật trọn vẹn. Bạn dành một phút chọn địa điểm thuận tiện nhất nhé.
           </p>
 
-          <div className="mini-route" aria-label="Các địa điểm dự kiến">
-            <span><MapPin size={15} /> Lâm Đồng</span>
-            <span className="route-heart">♡</span>
-            <span><MapPin size={15} /> Sài Gòn</span>
+          <div className="mini-route" aria-label="Tên cô dâu chú rể">
+            <span>Nguyệt</span>
+            <Heart className="couple-heart" size={20} fill="currentColor" aria-hidden="true" />
+            <span>Tú</span>
           </div>
         </header>
 
@@ -216,9 +210,8 @@ function App() {
                         transition={{ delay: 0.12 + index * 0.08 }}
                         aria-pressed={active}
                       >
-                        <span className="choice-emoji">{option.emoji}</span>
                         <span className="choice-copy">
-                          <span className="choice-badge">{option.badge}</span>
+                          {option.badge && <span className="choice-badge">{option.badge}</span>}
                           <strong>{option.title}</strong>
                           <small>{option.description}</small>
                         </span>
@@ -240,7 +233,7 @@ function App() {
 
                 <div className="fields-grid">
                   <label className="field full-width">
-                    <span><UserRound size={16} /> Họ và tên *</span>
+                    <span><UserRound size={16} /> Họ và tên</span>
                     <input
                       name="fullName"
                       value={form.fullName}
@@ -251,7 +244,7 @@ function App() {
                   </label>
 
                   <label className="field">
-                    <span>☎ Số điện thoại *</span>
+                    <span>☎ Số điện thoại</span>
                     <input
                       name="phone"
                       value={form.phone}
