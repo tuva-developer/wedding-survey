@@ -6,7 +6,7 @@ Một landing page khảo sát duy nhất để khách mời chọn:
 - 🌆 Tham dự báo hỷ tại **Sài Gòn**
 - 💗 **Ở đâu cũng được**
 
-Có form thông tin cá nhân, số người tham dự, lời nhắn, animation bằng Framer Motion, hiệu ứng confetti và gửi dữ liệu vào Google Sheet qua Google Apps Script.
+Có phần gửi kèm thông tin tùy chọn gồm tên, số người tham dự, lời nhắn; animation bằng Framer Motion, hiệu ứng confetti và gửi dữ liệu vào Google Sheet qua Google Apps Script.
 
 ## 1. Chạy project
 
@@ -75,7 +75,6 @@ Sheet `Responses` sẽ tự tạo các cột:
 | --- | --- |
 | Timestamp | Thời điểm Apps Script nhận dữ liệu |
 | Họ và tên | Tên khách |
-| Số điện thoại | Liên hệ |
 | Lựa chọn | Nhãn Lâm Đồng / Sài Gòn / linh hoạt |
 | Mã lựa chọn | `lam-dong`, `sai-gon`, `either` |
 | Số người | Số lượng tham dự |
@@ -104,4 +103,4 @@ Trong `src/styles.css`, có thể đổi palette bằng các biến CSS ở `:ro
 
 ## Lưu ý riêng tư
 
-Nếu link form được public, đừng yêu cầu các thông tin nhạy cảm không cần thiết. Google Sheet chứa số điện thoại nên chỉ chia sẻ quyền truy cập Sheet cho người cần dùng.
+Nếu link form được public, đừng yêu cầu các thông tin nhạy cảm không cần thiết. Google Sheet chứa phản hồi của khách mời nên chỉ chia sẻ quyền truy cập Sheet cho người cần dùng.

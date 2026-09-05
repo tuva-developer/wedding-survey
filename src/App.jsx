@@ -25,8 +25,8 @@ const attendanceOptions = [
 ]
 
 const initialForm = {
+  includeDetails: false,
   fullName: '',
-  phone: '',
   attendance: 'lam-dong',
   guestCount: '1',
   note: '',
@@ -69,6 +69,15 @@ function App() {
     setError('')
   }
 
+  const toggleDetails = (event) => {
+    const includeDetails = event.target.checked
+    setForm((prev) => ({
+      ...prev,
+      includeDetails,
+      ...(includeDetails ? {} : { fullName: '', guestCount: '1', note: '' }),
+    }))
+  }
+
   const validate = () => {
     if (!form.attendance) return 'Bạn chọn một địa điểm muốn tham dự giúp tụi mình nha.'
     return ''
@@ -99,12 +108,11 @@ function App() {
     setError('')
 
     const payload = new URLSearchParams({
-      fullName: form.fullName.trim(),
-      phone: form.phone.trim(),
+      fullName: form.includeDetails ? form.fullName.trim() : '',
       attendance: form.attendance,
       attendanceLabel: selected?.title ?? '',
-      guestCount: form.guestCount,
-      note: form.note.trim(),
+      guestCount: form.includeDetails ? form.guestCount : '',
+      note: form.includeDetails ? form.note.trim() : '',
       submittedAt: formatSubmittedAt(new Date()),
     })
 
@@ -243,57 +251,68 @@ function App() {
                 <div className="section-heading">
                   <span className="section-number">02</span>
                   <div>
-                    <h2>Cho tụi mình biết bạn là ai nhé</h2>
-                    <p>Thông tin chỉ dùng để tiện gửi lời mời và liên hệ.</p>
+                    <h2>Bạn có muốn gửi kèm thông tin không?</h2>
+                    <p>Phần này không bắt buộc. Bạn có thể bỏ qua hoặc gửi thêm vài thông tin để tụi mình tiện sắp xếp.</p>
                   </div>
                 </div>
 
-                <div className="fields-grid">
-                  <label className="field full-width">
-                    <span><UserRound size={16} /> Họ và tên</span>
-                    <input
-                      name="fullName"
-                      value={form.fullName}
-                      onChange={updateField}
-                      placeholder="Ví dụ: Nguyễn Minh Anh"
-                      autoComplete="name"
-                    />
-                  </label>
+                <label className="details-toggle">
+                  <input
+                    type="checkbox"
+                    checked={form.includeDetails}
+                    onChange={toggleDetails}
+                  />
+                  <span className="toggle-control" aria-hidden="true" />
+                  <span className="toggle-copy">
+                    <strong>Gửi kèm thông tin của mình</strong>
+                    <small>Tên, số người tham dự và lời nhắn đều là tùy chọn.</small>
+                  </span>
+                </label>
 
-                  <label className="field">
-                    <span>☎ Số điện thoại</span>
-                    <input
-                      name="phone"
-                      value={form.phone}
-                      onChange={updateField}
-                      placeholder="09xx xxx xxx"
-                      inputMode="tel"
-                      autoComplete="tel"
-                    />
-                  </label>
+                <AnimatePresence initial={false}>
+                  {form.includeDetails && (
+                    <motion.div
+                      className="fields-grid"
+                      initial={{ opacity: 0, height: 0, y: -8 }}
+                      animate={{ opacity: 1, height: 'auto', y: 0 }}
+                      exit={{ opacity: 0, height: 0, y: -8 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <label className="field full-width">
+                        <span><UserRound size={16} /> Họ và tên</span>
+                        <input
+                          name="fullName"
+                          value={form.fullName}
+                          onChange={updateField}
+                          placeholder="Ví dụ: Nguyễn Minh Anh"
+                          autoComplete="name"
+                        />
+                      </label>
 
-                  <label className="field">
-                    <span><UsersRound size={16} /> Số người tham dự</span>
-                    <select name="guestCount" value={form.guestCount} onChange={updateField}>
-                      <option value="1">1 người</option>
-                      <option value="2">2 người</option>
-                      <option value="3">3 người</option>
-                      <option value="4">4 người</option>
-                      <option value="5+">5 người trở lên</option>
-                    </select>
-                  </label>
+                      <label className="field">
+                        <span><UsersRound size={16} /> Số người tham dự</span>
+                        <select name="guestCount" value={form.guestCount} onChange={updateField}>
+                          <option value="1">1 người</option>
+                          <option value="2">2 người</option>
+                          <option value="3">3 người</option>
+                          <option value="4">4 người</option>
+                          <option value="5+">5 người trở lên</option>
+                        </select>
+                      </label>
 
-                  <label className="field full-width">
-                    <span>💬 Nhắn tụi mình vài lời</span>
-                    <textarea
-                      name="note"
-                      value={form.note}
-                      onChange={updateField}
-                      rows="4"
-                      placeholder="Lời nhắn, lưu ý ăn uống, hoặc điều gì bạn muốn tụi mình biết..."
-                    />
-                  </label>
-                </div>
+                      <label className="field full-width">
+                        <span>💬 Nhắn tụi mình vài lời</span>
+                        <textarea
+                          name="note"
+                          value={form.note}
+                          onChange={updateField}
+                          rows="4"
+                          placeholder="Lời nhắn, lưu ý ăn uống, hoặc điều gì bạn muốn tụi mình biết..."
+                        />
+                      </label>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </section>
 
               <AnimatePresence>

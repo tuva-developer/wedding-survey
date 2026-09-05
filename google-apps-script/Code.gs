@@ -18,7 +18,6 @@ const SHEET_NAME = 'Wedding survey';
 const HEADERS = [
   'Timestamp',
   'Họ và tên',
-  'Số điện thoại',
   'Lựa chọn',
   'Mã lựa chọn',
   'Số người',
@@ -27,7 +26,7 @@ const HEADERS = [
 ];
 
 const DATE_TIME_FORMAT = 'dd/MM/yyyy HH:mm:ss';
-const COLUMN_WIDTHS = [155, 180, 130, 230, 120, 90, 320, 170];
+const COLUMN_WIDTHS = [155, 180, 230, 120, 90, 320, 170];
 
 function doGet() {
   return ContentService
@@ -48,17 +47,16 @@ function doPost(e) {
       sheet = spreadsheet.insertSheet(SHEET_NAME);
     }
 
+    removePhoneColumnIfPresent(sheet);
     ensureResponseHeader(sheet);
     formatResponseSheet(sheet);
 
     const nextRow = sheet.getLastRow() + 1;
     sheet.getRange(nextRow, 1).setNumberFormat(DATE_TIME_FORMAT);
-    sheet.getRange(nextRow, 3).setNumberFormat('@');
-    sheet.getRange(nextRow, 8).setNumberFormat(DATE_TIME_FORMAT);
+    sheet.getRange(nextRow, 7).setNumberFormat(DATE_TIME_FORMAT);
     sheet.getRange(nextRow, 1, 1, HEADERS.length).setValues([[
       new Date(),
       safeCell(e.parameter.fullName),
-      phoneCell(e.parameter.phone),
       safeCell(e.parameter.attendanceLabel),
       safeCell(e.parameter.attendance),
       safeCell(e.parameter.guestCount),
@@ -90,6 +88,7 @@ function formatExistingResponses() {
     sheet = spreadsheet.insertSheet(SHEET_NAME);
   }
 
+  removePhoneColumnIfPresent(sheet);
   ensureResponseHeader(sheet);
 
   formatResponseSheet(sheet);
@@ -120,6 +119,12 @@ function ensureResponseHeader(sheet) {
   }
 }
 
+function removePhoneColumnIfPresent(sheet) {
+  if (sheet.getLastColumn() >= 3 && sheet.getRange(1, 3).getDisplayValue() === 'Số điện thoại') {
+    sheet.deleteColumn(3);
+  }
+}
+
 function formatResponseSheet(sheet) {
   const lastRow = Math.max(sheet.getLastRow(), 1);
   const lastColumn = HEADERS.length;
@@ -147,7 +152,6 @@ function formatResponseSheet(sheet) {
   }
 
   const dataRowCount = lastRow - 1;
-  normalizePhoneNumbers(sheet, dataRowCount);
   normalizeClientTimestamps(sheet, dataRowCount);
 
   sheet.getRange(2, 1, dataRowCount, lastColumn)
@@ -156,40 +160,15 @@ function formatResponseSheet(sheet) {
   sheet.getRange(2, 1, dataRowCount, 1)
     .setNumberFormat(DATE_TIME_FORMAT)
     .setHorizontalAlignment('center');
-  sheet.getRange(2, 3, dataRowCount, 1)
-    .setNumberFormat('@')
+  sheet.getRange(2, 4, dataRowCount, 2)
     .setHorizontalAlignment('center');
-  sheet.getRange(2, 5, dataRowCount, 2)
-    .setHorizontalAlignment('center');
-  sheet.getRange(2, 8, dataRowCount, 1)
+  sheet.getRange(2, 7, dataRowCount, 1)
     .setNumberFormat(DATE_TIME_FORMAT)
     .setHorizontalAlignment('center');
 }
 
-function normalizePhoneNumbers(sheet, dataRowCount) {
-  const phoneRange = sheet.getRange(2, 3, dataRowCount, 1);
-  const phoneValues = phoneRange.getDisplayValues().map(([value]) => {
-    const text = String(value || '').trim();
-
-    if (!text) {
-      return [''];
-    }
-
-    const digitsOnly = text.replace(/\D/g, '');
-    if (/^\d{9}$/.test(digitsOnly) && !text.startsWith('0') && !text.startsWith('+')) {
-      return [`0${digitsOnly}`];
-    }
-
-    return [phoneCell(text)];
-  });
-
-  phoneRange
-    .setNumberFormat('@')
-    .setValues(phoneValues);
-}
-
 function normalizeClientTimestamps(sheet, dataRowCount) {
-  const submittedAtRange = sheet.getRange(2, 8, dataRowCount, 1);
+  const submittedAtRange = sheet.getRange(2, 7, dataRowCount, 1);
   const submittedAtValues = submittedAtRange.getValues().map(([value]) => {
     if (value instanceof Date) {
       return [value];
@@ -200,11 +179,6 @@ function normalizeClientTimestamps(sheet, dataRowCount) {
   });
 
   submittedAtRange.setValues(submittedAtValues);
-}
-
-function phoneCell(value) {
-  const text = String(value || '').trim();
-  return text ? safeCell(text) : '';
 }
 
 // Prevent values beginning with =, +, -, @ from being treated as formulas in Sheets.
