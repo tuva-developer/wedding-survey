@@ -8,13 +8,13 @@ const attendanceOptions = [
   {
     value: 'lam-dong',
     title: 'Về Lâm Đồng chung vui',
-    description: 'Mình muốn tham dự vu quy tại nhà ở Lâm Đồng (ngày 12/12/2026).',
+    description: 'Mình muốn tham dự vu quy tại nhà ở Lâm Đồng (ngày 26/12/2026).',
     badge: 'Vu quy',
   },
   {
     value: 'sai-gon',
     title: 'Hẹn nhau ở Sài Gòn',
-    description: 'Mình muốn tham dự buổi báo hỷ tại Sài Gòn (dự định tháng 1 hoặc tháng 2/2027).',
+    description: 'Mình muốn tham dự buổi báo hỷ tại Sài Gòn (ngày 30/01/2027).',
     badge: 'Báo hỷ',
   },
   {
